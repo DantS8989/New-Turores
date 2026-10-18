@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta — TutoresOn-Line</title>
+  <meta name="description" content="Regístrate en TutoresOn-Line como estudiante o tutor.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Iluminación de fondo sutil -->
+  <div class="ambient-glow"></div>
+
+  <!-- Barra de navegación superior -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">T</div>
+        TutoresOn<span>-Line</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-ghost btn-sm">← Inicio</a>
+        <a href="login.html" class="btn btn-outline btn-sm">Iniciar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-wrapper">
+    <div class="auth-container" style="max-width: 520px;">
+      <div class="auth-card">
+        <div class="auth-header">
+          <a href="index.html" class="brand-logo">
+            <div class="brand-icon">T</div>
+            TutoresOn<span>-Line</span>
+          </a>
+          <h1>Crear cuenta</h1>
+          <p>Regístrate en pocos segundos y comienza hoy mismo.</p>
+        </div>
+
+        <!-- Alerta de errores dinámica -->
+        <div id="auth-alert" class="alert alert-danger" style="display: none;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <div id="auth-alert-message"></div>
+        </div>
+
+        <!-- Formulario que envía al backend PHP (registro.php) -->
+        <form action="registro.php" method="POST" id="register-form">
+          
+          <!-- Selector interactivo de Rol -->
+          <label class="form-label" style="margin-bottom: 8px;">¿Cómo deseas usar TutoresOn-Line?</label>
+          <div class="role-selector-grid">
+            <label class="role-radio-card">
+              <input 
+                type="radio" 
+                name="role" 
+                value="student" 
+                id="role-student"
+                checked 
+              />
+              <div class="role-card-inner">
+                <div class="role-icon">📚</div>
+                <div class="role-title">Soy Estudiante</div>
+                <div class="role-desc">Quiero aprender</div>
+              </div>
+            </label>
+
+            <label class="role-radio-card">
+              <input 
+                type="radio" 
+                name="role" 
+                value="tutor" 
+                id="role-tutor"
+              />
+              <div class="role-card-inner">
+                <div class="role-icon">🎓</div>
+                <div class="role-title">Soy Tutor</div>
+                <div class="role-desc">Quiero enseñar</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="name" class="form-label">Nombre completo</label>
+            <input 
+              type="text" 
+              name="name" 
+              id="name" 
+              class="form-control" 
+              placeholder="Ej. Juan Pérez" 
+              required 
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Correo electrónico</label>
+            <input 
+              type="email" 
+              name="email" 
+              id="email" 
+              class="form-control" 
+              placeholder="tu@correo.com" 
+              required 
+              autocomplete="email"
+            />
+          </div>
+
+          <!-- Campo dinámico para Tutores -->
+          <div class="form-group" id="specialty-group" style="display: none;">
+            <label for="specialty" class="form-label">Materia o Especialidad Principal</label>
+            <input 
+              type="text" 
+              name="specialty" 
+              id="specialty" 
+              class="form-control" 
+              placeholder="Ej: Matemáticas, Programación, Inglés..." 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password" class="form-label">Contraseña</label>
+            <div class="password-input-wrapper">
+              <input 
+                type="password" 
+                name="password" 
+                id="reg-password" 
+                class="form-control" 
+                placeholder="Mínimo 4 caracteres" 
+                required 
+                autocomplete="new-password"
+              />
+              <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Mostrar u ocultar contraseña">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
+            <div class="password-input-wrapper">
+              <input 
+                type="password" 
+                name="confirm_password" 
+                id="confirm_password" 
+                class="form-control" 
+                placeholder="Repite tu contraseña" 
+                required 
+                autocomplete="new-password"
+              />
+              <button type="button" class="password-toggle-btn" data-target="confirm_password" aria-label="Mostrar u ocultar contraseña">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top: 10px;">
+            Crear cuenta
+          </button>
+        </form>
+
+        <div style="margin-top: 24px; text-align: center; font-size: 14px; color: var(--text-muted);">
+          ¿Ya tienes una cuenta registrada? 
+          <a href="login.html" style="color: var(--primary); font-weight: 700;">Inicia sesión</a>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <a href="index.html" style="font-size: 13px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">
+            ← Volver a la página principal
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" style="padding: 24px 0; margin-top: auto;">
+    <div class="container" style="text-align: center; font-size: 13px; color: #64748B;">
+      &copy; 2026 TutoresOn-Line — Aplicaciones Web 1. Formulario HTML con procesamiento PHP.
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
