@@ -1,48 +1,58 @@
-# TutoresOn-Line — Sesiones, cookies y registro en PHP
+# TutoresOn-Line
 
-Proyecto en HTML5 semántico con un backend PHP dedicado a sesiones, la
-cookie "Recordarme" y el registro/login de usuarios. Por ahora los datos
-se guardan en `data/users.json` (sin base de datos SQL).
+Plataforma web educativa para conectar estudiantes con tutores particulares.
+El proyecto utiliza HTML para las pantallas, CSS y JavaScript para la
+interfaz, y PHP para gestionar los usuarios y las sesiones.
 
-## Estructura
+## Estructura del proyecto
 
 ```text
-tutoresonline-php/
-├── index.html            # Pantalla principal (pública, se adapta si hay sesión)
-├── login.html             # Formulario de inicio de sesión + casilla "Recordarme"
-├── registro.html          # Formulario de registro (elige rol: estudiante o tutor)
-│
-├── login.php               # Verifica credenciales, abre sesión, crea cookie "Recordarme"
-├── registro.php            # Valida y crea el usuario, abre sesión automáticamente
-├── logout.php              # Cierra sesión y borra la cookie "Recordarme"
-├── check_session.php       # API JSON: ¿hay sesión activa? (la consulta assets/js/main.js)
-├── db.php                  # Acceso a datos + todas las funciones de sesión y cookies
-│
+tutoresonline/
+├── index.html
+├── login.html
+├── registro.html
+├── login.php
+├── registro.php
+├── logout.php
+├── check_session.php
+├── db.php
 ├── data/
-│   ├── users.json          # "Tabla" de usuarios (JSON)
-│   └── .htaccess           # Bloquea el acceso directo a este archivo desde el navegador
-│
+│   └── users.json
 └── assets/
-    ├── css/style.css
-    └── js/main.js
+    ├── css/
+    │   └── style.css
+    └── js/
+        └── main.js
 ```
 
-## Cómo ejecutarlo
+## Funcionamiento general
 
-```bash
-php -S localhost:8000
-```
-y abre `http://localhost:8000`. También funciona con XAMPP/WampServer/Laragon copiando la carpeta a `htdocs` o `www`.
+- Las páginas HTML contienen las pantallas principales, los formularios de
+  inicio de sesión y el registro de usuarios.
+- `style.css` define la apariencia visual y la adaptación a distintos tamaños
+  de pantalla.
+- `main.js` añade comportamiento a la interfaz, como filtros, mensajes y
+  comprobaciones de sesión.
+- Los archivos PHP reciben los datos de los formularios, validan la
+  información y administran el acceso de los usuarios.
+- Las sesiones PHP permiten conservar la identidad del usuario mientras
+  navega por el sitio. `check_session.php` informa al frontend si existe una
+  sesión activa y `logout.php` la cierra.
 
-## Qué cambió respecto a la versión anterior
+## Datos y base de datos
 
-- **Contraseñas con hash real.** `registro.php` ya guarda las contraseñas con `password_hash()`, nunca en texto plano. Las cuentas demo que ya tenías en `users.json` (con contraseña en texto plano) se migran solas al hash seguro la primera vez que alguien inicia sesión con ellas: ese fue el motivo de guardarlas así en primer lugar, para no perder esas cuentas de prueba.
-- **Se quitó un acceso indebido.** El `login.php` anterior dejaba entrar a cualquiera a las cuentas con `id` 1, 2 o 3 usando la clave `123456` o `password123`, sin importar si esa cuenta había cambiado su contraseña. Eso ya no existe.
-- **"Recordarme" (cookie de 30 días).** Si marcas la casilla al iniciar sesión, `login.php` crea un token aleatorio, guarda solo su *hash* en `users.json` (el token real nunca se guarda) y lo manda en una cookie `httponly`. En cada visita, `check_session.php` usa esa cookie para reabrir la sesión sola si ya se cerró, y rota el token (uno robado deja de servir en cuanto tú vuelves a entrar). `logout.php` borra la cookie y el token guardados.
-- **Sesión más segura.** La cookie de sesión de PHP ahora es `httponly` y `SameSite=Lax`, y se marca `secure` automáticamente si el sitio corre con HTTPS. Cada inicio de sesión llama a `session_regenerate_id()` para evitar fijación de sesión.
-- **`data/` protegida.** Agregué `data/.htaccess` para que nadie pueda abrir `data/users.json` directamente escribiendo su URL (solo funciona con Apache; si usas Nginx avísame y te paso el bloque equivalente).
-- **Rutas reorganizadas.** `style.css` y `main.js` ahora están en `assets/css/` y `assets/js/`, como ya los referenciaban `index.html`, `login.html` y `registro.html`.
+Actualmente el proyecto utiliza `data/users.json` como almacenamiento local
+de usuarios. Este archivo cumple una función similar a una tabla sencilla:
+cada registro contiene los datos de un usuario, como su nombre, correo,
+contraseña protegida y rol.
 
-## Pendiente (no incluido aquí)
+`db.php` funciona como una capa de acceso a datos. Allí se concentran las
+operaciones para buscar, consultar y registrar usuarios, de modo que el resto
+del proyecto no necesita acceder directamente al archivo JSON. Esta
+separación facilita reemplazar posteriormente el almacenamiento local por una
+base de datos SQL sin cambiar la lógica principal de los formularios y las
+sesiones.
 
-Esto sigue usando `data/users.json`, no una base de datos SQL. El diseño de la base de datos (diagrama + script SQL) es un paso aparte que no tocamos en esta entrega.
+Las contraseñas se almacenan mediante un hash seguro y no como texto plano.
+Además, la información de usuarios se mantiene dentro de la carpeta `data`
+para evitar que forme parte de las pantallas públicas del sitio.

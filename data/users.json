@@ -1,0 +1,41 @@
+[
+    {
+        "id": 1,
+        "name": "Carlos Gómez",
+        "email": "estudiante@ejemplo.com",
+        "password": "123456",
+        "role": "student",
+        "role_label": "Estudiante",
+        "created_at": "2026-01-15 10:00:00"
+    },
+    {
+        "id": 2,
+        "name": "Dra. Ana Martínez",
+        "email": "tutor@ejemplo.com",
+        "password": "123456",
+        "role": "tutor",
+        "role_label": "Tutor",
+        "specialty": "Matemáticas & Física",
+        "created_at": "2026-01-10 09:30:00"
+    },
+    {
+        "id": 3,
+        "name": "Prof. Roberto Silva",
+        "email": "roberto@ejemplo.com",
+        "password": "123456",
+        "role": "tutor",
+        "role_label": "Tutor",
+        "specialty": "Programación Web & Python",
+        "created_at": "2026-02-01 14:15:00"
+    },
+    {
+        "id": 4,
+        "name": "Sebastian Ortega Ramirez",
+        "email": "sebasortegaramirez@gmail.com",
+        "password": "DarkAngel_8899",
+        "role": "tutor",
+        "role_label": "Tutor",
+        "specialty": "Sistemas",
+        "created_at": "2026-09-28 14:01:42"
+    }
+]
