@@ -1,24 +1,14 @@
 <?php
 /**
  * registro.php - Procesador backend de Registro de Usuarios
-<<<<<<< HEAD
  *
  * Recibe el formulario POST de registro.html, valida los datos, guarda
  * el nuevo usuario (con la contraseña ya hasheada, ver db.php) y abre
  * su sesión antes de redirigir.
-=======
- * 
- * Recibe el formulario POST de registro.html, valida los datos,
- * ejecuta el guardado en la base de datos (db.php) e inicia la sesión.
->>>>>>> 4b79d1eda0ab284548852dbbd6e24f7a4fd823f2
  */
 
 require_once __DIR__ . '/db.php';
 
-<<<<<<< HEAD
-=======
-// Si no es petición POST, redirigir al formulario HTML
->>>>>>> 4b79d1eda0ab284548852dbbd6e24f7a4fd823f2
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: registro.html');
     exit;
@@ -63,27 +53,11 @@ if (db_find_user_by_email($email)) {
     exit;
 }
 
-<<<<<<< HEAD
 // 6. Insertar en la base de datos (la contraseña se hashea dentro de db_insert_user)
 $newUser = db_insert_user($name, $email, $password, $role, $specialty);
 
 // 7. Abrir sesión automáticamente
 session_login($newUser);
-=======
-// 6. Insertar en la base de datos (INSERT INTO usuarios ...)
-$newUser = db_insert_user($name, $email, $password, $role, $specialty);
-
-// 7. Iniciar sesión automática
-$_SESSION['user'] = [
-    'id' => $newUser['id'],
-    'name' => $newUser['name'],
-    'email' => $newUser['email'],
-    'role' => $newUser['role'],
-    'role_label' => $newUser['role_label'],
-    'specialty' => $newUser['specialty'],
-    'login_time' => time()
-];
->>>>>>> 4b79d1eda0ab284548852dbbd6e24f7a4fd823f2
 
 // 8. Redirigir a la pantalla principal
 header('Location: index.html?msg=register_success&name=' . urlencode($newUser['name']) . '&role=' . urlencode($newUser['role_label']));
