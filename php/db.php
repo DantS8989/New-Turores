@@ -1,0 +1,333 @@
+<?php
+/**
+ * db.php - Conexión MySQL (PDO), sesiones seguras, CSRF, mensajes flash,
+ *          límite de intentos de login y cookie "Recordarme".
+ *
+ * Este archivo solo se incluye desde otros .php (el .htaccess bloquea su
+ * acceso directo). Requiere PHP 7.4 o superior.
+ */
+
+/* ──────────────────────────────────────────────────────────
+ * Errores: se registran en el log del servidor, nunca se muestran
+ * ────────────────────────────────────────────────────────── */
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+header_remove('X-Powered-By');
+
+function fail_server($message = 'Servicio no disponible. Inténtalo más tarde.') {
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/plain; charset=utf-8');
+    }
+    exit($message);
+}
+
+set_exception_handler(function ($e) {
+    error_log('[TutoresOn-Line] ' . get_class($e) . ': ' . $e->getMessage());
+    fail_server();
+});
+
+/* ──────────────────────────────────────────────────────────
+ * Sesión segura
+ * ────────────────────────────────────────────────────────── */
+define('REMEMBER_COOKIE', 'remember_token');
+define('REMEMBER_DAYS', 30);
+define('LOGIN_MAX_FAILS_EMAIL', 5);    // intentos fallidos por correo
+define('LOGIN_MAX_FAILS_IP', 30);      // intentos fallidos por IP
+define('LOGIN_WINDOW_SECONDS', 900);   // ventana de 15 minutos
+
+function request_is_https() {
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    session_name('TUTORESSID');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure'   => request_is_https(),
+    ]);
+    session_start();
+}
+
+/* ──────────────────────────────────────────────────────────
+ * Conexión a la base de datos (credenciales en config.php)
+ * ────────────────────────────────────────────────────────── */
+$configFile = __DIR__ . '/config.php';
+if (!is_file($configFile)) {
+    error_log('[TutoresOn-Line] Falta config.php (copia config.example.php).');
+    fail_server();
+}
+$config = require $configFile;
+
+try {
+    $pdo = new PDO(
+        'mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'] . ';charset=utf8mb4',
+        $config['user'],
+        $config['pass'],
+        [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+    );
+} catch (PDOException $e) {
+    error_log('[TutoresOn-Line] Conexión a la base de datos fallida: ' . $e->getMessage());
+    fail_server();
+}
+unset($config);
+
+/* ──────────────────────────────────────────────────────────
+ * Utilidades
+ * ────────────────────────────────────────────────────────── */
+function redirect($url) {
+    header('Location: ' . $url);
+    exit;
+}
+
+function json_response($data) {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+/** Lee un campo POST como texto; si no es texto (p. ej. un arreglo) devuelve ''. */
+function post_str($key) {
+    $v = $_POST[$key] ?? '';
+    return is_string($v) ? $v : '';
+}
+
+// Respaldo por si el hosting no tiene la extensión mbstring
+if (!function_exists('mb_strlen')) {
+    function mb_strlen($text) {
+        return (int)preg_match_all('/./us', $text);
+    }
+}
+
+function normalize_email($email) {
+    return strtolower(trim($email));
+}
+
+function client_ip() {
+    return substr($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', 0, 45);
+}
+
+/* ── CSRF ── */
+function csrf_token() {
+    if (empty($_SESSION['csrf'])) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf'];
+}
+
+function csrf_valid() {
+    $sent = post_str('csrf_token');
+    return $sent !== '' && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $sent);
+}
+
+/* ── Mensajes flash (se guardan en la sesión, no en la URL) ── */
+function flash_set($type, array $data = []) {
+    $_SESSION['flash'] = ['type' => $type, 'data' => $data];
+}
+
+function flash_pull() {
+    $flash = $_SESSION['flash'] ?? null;
+    unset($_SESSION['flash']);
+    return $flash;
+}
+
+/* ──────────────────────────────────────────────────────────
+ * Acceso a datos
+ * ────────────────────────────────────────────────────────── */
+function map_user_fields($user) {
+    if (!$user) return null;
+    $user['name'] = $user['nombre'] ?? '';
+    $user['role'] = $user['rol'] ?? '';
+    return $user;
+}
+
+function db_find_user_by_email($email) {
+    global $pdo;
+    $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE email = ? LIMIT 1');
+    $stmt->execute([normalize_email($email)]);
+    return map_user_fields($stmt->fetch());
+}
+
+function db_find_user_by_id($id) {
+    global $pdo;
+    $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE id = ? LIMIT 1');
+    $stmt->execute([(int)$id]);
+    return map_user_fields($stmt->fetch());
+}
+
+/** Inserta un usuario. Puede lanzar PDOException (código 23000 si el correo ya existe). */
+function db_insert_user($name, $email, $password, $role, $specialty = '') {
+    global $pdo;
+    $roleLabel = ($role === 'tutor') ? 'Tutor' : 'Estudiante';
+    $stmt = $pdo->prepare(
+        'INSERT INTO usuarios (nombre, email, password, rol, specialty, role_label, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)'
+    );
+    $stmt->execute([
+        trim($name),
+        normalize_email($email),
+        password_hash($password, PASSWORD_DEFAULT),
+        $role,
+        trim($specialty),
+        $roleLabel,
+        date('Y-m-d H:i:s'),
+    ]);
+    return db_find_user_by_id($pdo->lastInsertId());
+}
+
+function db_update_user_password($id, $plainPassword) {
+    global $pdo;
+    $stmt = $pdo->prepare('UPDATE usuarios SET password = ? WHERE id = ?');
+    $stmt->execute([password_hash($plainPassword, PASSWORD_DEFAULT), (int)$id]);
+}
+
+function db_set_remember_token($id, $tokenHash, $expiresAt) {
+    global $pdo;
+    $stmt = $pdo->prepare('UPDATE usuarios SET remember_token_hash = ?, remember_expires = ? WHERE id = ?');
+    $stmt->execute([$tokenHash, (int)$expiresAt, (int)$id]);
+}
+
+function db_clear_remember_token($id) {
+    global $pdo;
+    $stmt = $pdo->prepare('UPDATE usuarios SET remember_token_hash = NULL, remember_expires = NULL WHERE id = ?');
+    $stmt->execute([(int)$id]);
+}
+
+/** Tutores registrados (solo datos públicos: nombre y especialidad). */
+function db_list_tutors($limit = 60) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT nombre, specialty FROM usuarios WHERE rol = 'tutor' ORDER BY created_at DESC, id DESC LIMIT " . (int)$limit);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/* ──────────────────────────────────────────────────────────
+ * Límite de intentos de inicio de sesión (anti fuerza bruta)
+ * ────────────────────────────────────────────────────────── */
+function login_is_locked($email, $ip) {
+    global $pdo;
+    $since = date('Y-m-d H:i:s', time() - LOGIN_WINDOW_SECONDS);
+
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM intentos_login WHERE email = ? AND intentado_en > ?');
+    $stmt->execute([$email, $since]);
+    if ((int)$stmt->fetchColumn() >= LOGIN_MAX_FAILS_EMAIL) return true;
+
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM intentos_login WHERE ip = ? AND intentado_en > ?');
+    $stmt->execute([$ip, $since]);
+    return (int)$stmt->fetchColumn() >= LOGIN_MAX_FAILS_IP;
+}
+
+function login_record_failure($email, $ip) {
+    global $pdo;
+    $stmt = $pdo->prepare('INSERT INTO intentos_login (email, ip, intentado_en) VALUES (?, ?, ?)');
+    $stmt->execute([substr($email, 0, 150), $ip, date('Y-m-d H:i:s')]);
+
+    // Limpieza ocasional de registros antiguos
+    if (random_int(1, 50) === 1) {
+        $old = $pdo->prepare('DELETE FROM intentos_login WHERE intentado_en < ?');
+        $old->execute([date('Y-m-d H:i:s', time() - 86400)]);
+    }
+}
+
+function login_clear_failures($email) {
+    global $pdo;
+    $stmt = $pdo->prepare('DELETE FROM intentos_login WHERE email = ?');
+    $stmt->execute([$email]);
+}
+
+/* ──────────────────────────────────────────────────────────
+ * Sesión de usuario y cookie "Recordarme"
+ * ────────────────────────────────────────────────────────── */
+function session_login($user) {
+    session_regenerate_id(true);
+    unset($_SESSION['csrf']); // token nuevo después de autenticar
+    $_SESSION['user'] = [
+        'id'         => (int)$user['id'],
+        'name'       => $user['name'],
+        'email'      => $user['email'],
+        'role'       => $user['role'],
+        'role_label' => $user['role_label'] ?? ($user['role'] === 'tutor' ? 'Tutor' : 'Estudiante'),
+        'specialty'  => $user['specialty'] ?? '',
+        'login_time' => time(),
+    ];
+}
+
+function remember_cookie_options($expires) {
+    return [
+        'expires'  => $expires,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure'   => request_is_https(),
+    ];
+}
+
+function remember_me_set($userId) {
+    $token   = bin2hex(random_bytes(32));
+    $expires = time() + 60 * 60 * 24 * REMEMBER_DAYS;
+    db_set_remember_token($userId, hash('sha256', $token), $expires);
+    setcookie(REMEMBER_COOKIE, $userId . ':' . $token, remember_cookie_options($expires));
+}
+
+/** Borra solo la cookie del navegador (no toca la base de datos). */
+function remember_cookie_forget() {
+    setcookie(REMEMBER_COOKIE, '', remember_cookie_options(time() - 3600));
+    unset($_COOKIE[REMEMBER_COOKIE]);
+}
+
+/** Borra la cookie y el token guardado de un usuario ya verificado. */
+function remember_me_clear($userId = null) {
+    if ($userId) {
+        db_clear_remember_token($userId);
+    }
+    remember_cookie_forget();
+}
+
+function try_auto_login() {
+    if (!empty($_SESSION['user'])) {
+        return true;
+    }
+    $cookie = $_COOKIE[REMEMBER_COOKIE] ?? '';
+    if (!is_string($cookie) || strpos($cookie, ':') === false) {
+        return false;
+    }
+
+    list($id, $token) = explode(':', $cookie, 2);
+    if (!ctype_digit($id) || $token === '') {
+        remember_cookie_forget();
+        return false;
+    }
+
+    $user = db_find_user_by_id($id);
+    if (!$user || empty($user['remember_token_hash']) || empty($user['remember_expires'])) {
+        remember_cookie_forget();
+        return false;
+    }
+
+    // Token vencido de un usuario real: se limpia también en la base de datos
+    if ((int)$user['remember_expires'] < time()) {
+        remember_me_clear($user['id']);
+        return false;
+    }
+
+    // Token incorrecto: solo se olvida la cookie (no se toca el token del dueño real)
+    if (!hash_equals($user['remember_token_hash'], hash('sha256', $token))) {
+        remember_cookie_forget();
+        return false;
+    }
+
+    session_login($user);
+    remember_me_set($user['id']); // rotación del token en cada uso
+    return true;
+}

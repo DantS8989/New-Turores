@@ -1,0 +1,53 @@
+# ============================================================
+# TutoresOn-Line · Configuración de Apache (hosting)
+# ============================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+# ── 1. Archivos que nunca deben descargarse desde el navegador ──
+<FilesMatch "^(database\.sql|README\.md|\.gitignore)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Carpetas y archivos ocultos (.git, .env, etc.)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)\.(?!well-known) - [R=404,L]
+
+    # ── 2. HTTPS obligatorio ──
+    # Descomenta estas 3 líneas cuando el hosting ya tenga certificado SSL:
+    # RewriteCond %{HTTPS} !=on
+    # RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── 3. Cabeceras de seguridad ──
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+
+    # HSTS: descomenta SOLO cuando HTTPS funcione bien en todo el sitio
+    # Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# ── 4. Rendimiento: compresión y caché de recursos estáticos ──
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>

@@ -1,0 +1,8 @@
+# Credenciales reales: no se suben al repositorio
+/php/config.php
+
+# Datos locales y archivos del sistema
+data/
+*.log
+.DS_Store
+Thumbs.db
