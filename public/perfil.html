@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil — TutoresOn-Line</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="perfil">
+
+  <div class="ambient-glow"></div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">T</div>
+        TutoresOn<span>-Line</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-ghost btn-sm">Inicio</a>
+        <a href="mensajes.html" class="btn btn-ghost btn-sm">Mensajes</a>
+        <div id="nav-user-actions" style="display: none; align-items: center; gap: 10px;">
+          <a href="perfil.html" class="user-menu-pill">
+            <div class="user-avatar-circle" id="nav-user-avatar">U</div>
+            <div class="user-info-text">
+              <span class="user-info-name" id="nav-user-name">Usuario</span>
+              <span class="user-info-role" id="nav-user-role">Rol</span>
+            </div>
+          </a>
+          <form action="api/logout.php" method="POST" class="logout-form">
+            <input type="hidden" name="csrf_token" value="">
+            <button type="submit" class="btn btn-danger-outline btn-sm">Salir</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="container page-narrow">
+
+      <div id="auth-alert" class="alert alert-danger" style="display: none;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div id="auth-alert-message"></div>
+      </div>
+
+      <section class="profile-card" aria-labelledby="perfil-title">
+        <form action="api/perfil_guardar.php" method="POST" enctype="multipart/form-data" id="profile-form">
+          <input type="hidden" name="csrf_token" value="">
+
+          <div class="profile-head">
+            <div class="avatar-lg" id="profile-avatar" aria-hidden="true">U</div>
+            <div class="profile-head-info">
+              <h1 id="perfil-title">Mi perfil</h1>
+              <span class="badge badge-primary" id="profile-role">Cargando…</span>
+              <a href="#" id="public-profile-link" class="profile-link" style="display: none;">Ver cómo ven mi perfil →</a>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="foto" class="form-label">Foto de perfil</label>
+            <input type="file" name="foto" id="foto" class="form-control" accept="image/jpeg,image/png,image/webp">
+            <p class="form-hint">JPG, PNG o WebP, máximo 2 MB. Se recorta en cuadrado.</p>
+            <label class="check-row" id="remove-photo-row" style="display: none;">
+              <input type="checkbox" name="quitar_foto" value="1"> Quitar mi foto actual
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="name" class="form-label">Nombre completo</label>
+            <input type="text" name="name" id="name" class="form-control" maxlength="100" required>
+          </div>
+
+          <div class="form-group">
+            <label for="account-email" class="form-label">Correo de la cuenta</label>
+            <input type="email" id="account-email" class="form-control" disabled>
+            <p class="form-hint">Es el correo con el que inicias sesión; no se muestra a otras personas.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="bio" class="form-label">Descripción</label>
+            <textarea name="bio" id="bio" class="form-control" rows="4" maxlength="500" placeholder="Cuéntales a los demás quién eres y qué te gustaría lograr…"></textarea>
+          </div>
+
+          <div id="tutor-fields" style="display: none;">
+            <h2 class="profile-subtitle">Datos como tutor</h2>
+
+            <div class="form-group">
+              <label for="specialty" class="form-label">Materia o especialidad principal</label>
+              <input type="text" name="specialty" id="specialty" class="form-control" maxlength="255" placeholder="Ej: Matemáticas, Programación, Inglés…">
+            </div>
+
+            <div class="form-group">
+              <label for="tarifa_hora" class="form-label">Precio por hora ($)</label>
+              <input type="number" name="tarifa_hora" id="tarifa_hora" class="form-control" min="0" max="9999999" step="1" inputmode="numeric" placeholder="Ej: 30000">
+              <p class="form-hint">Déjalo vacío si prefieres acordar el precio con cada estudiante.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="whatsapp" class="form-label">WhatsApp de contacto</label>
+              <input type="tel" name="whatsapp" id="whatsapp" class="form-control" maxlength="25" placeholder="Ej: +573001234567">
+            </div>
+
+            <div class="form-group">
+              <label for="email_contacto" class="form-label">Correo de contacto</label>
+              <input type="email" name="email_contacto" id="email_contacto" class="form-control" maxlength="150" placeholder="Opcional">
+              <p class="form-hint">Tu WhatsApp y correo de contacto solo los ven personas con una cuenta iniciada.</p>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full">Guardar cambios</button>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="toast-box" class="toast-container" style="display: none;">
+    <div class="toast">
+      <span id="toast-icon" class="toast-icon">✓</span>
+      <span id="toast-message"></span>
+    </div>
+  </div>
+
+  <footer class="footer" style="padding: 24px 0; margin-top: auto;">
+    <div class="container" style="text-align: center; font-size: 13px; color: #64748B;">
+      &copy; 2026 TutoresOn-Line. Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/paginas.js" defer></script>
+</body>
+</html>

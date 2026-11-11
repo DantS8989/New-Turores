@@ -1,0 +1,12 @@
+# Credenciales reales: no se suben al repositorio
+config.php
+
+# Datos locales y archivos del sistema
+data/
+*.log
+.DS_Store
+Thumbs.db
+
+# Fotos de perfil subidas por los usuarios
+storage/uploads/fotos/*
+!storage/uploads/fotos/.gitkeep

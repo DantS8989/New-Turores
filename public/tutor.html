@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del tutor — TutoresOn-Line</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="tutor">
+
+  <div class="ambient-glow"></div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">T</div>
+        TutoresOn<span>-Line</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-ghost btn-sm">Inicio</a>
+        <a href="mensajes.html" class="btn btn-ghost btn-sm">Mensajes</a>
+        <div id="nav-user-actions" style="display: none; align-items: center; gap: 10px;">
+          <a href="perfil.html" class="user-menu-pill">
+            <div class="user-avatar-circle" id="nav-user-avatar">U</div>
+            <div class="user-info-text">
+              <span class="user-info-name" id="nav-user-name">Usuario</span>
+              <span class="user-info-role" id="nav-user-role">Rol</span>
+            </div>
+          </a>
+          <form action="api/logout.php" method="POST" class="logout-form">
+            <input type="hidden" name="csrf_token" value="">
+            <button type="submit" class="btn btn-danger-outline btn-sm">Salir</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="container page-narrow">
+
+      <div id="auth-alert" class="alert alert-danger" style="display: none;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div id="auth-alert-message"></div>
+      </div>
+
+      <p id="tutor-loading" class="tutors-empty">Cargando perfil…</p>
+      <p id="tutor-missing" class="tutors-empty" style="display: none;">No encontramos a este tutor. <a href="index.html#tutores" class="profile-link">Volver al listado</a></p>
+
+      <article class="profile-card" id="tutor-card" style="display: none;">
+        <div class="profile-head">
+          <div class="avatar-lg" id="tutor-avatar" aria-hidden="true">T</div>
+          <div class="profile-head-info">
+            <h1 id="tutor-name">Tutor</h1>
+            <p class="profile-specialty" id="tutor-specialty"></p>
+            <p class="profile-price" id="tutor-price"></p>
+          </div>
+        </div>
+
+        <div class="profile-block" id="tutor-bio-block" style="display: none;">
+          <h2 class="profile-subtitle">Acerca del tutor</h2>
+          <p class="profile-bio" id="tutor-bio"></p>
+        </div>
+
+        <div class="profile-block" id="tutor-contact-block" style="display: none;">
+          <h2 class="profile-subtitle">Contacto directo</h2>
+          <div class="contact-list">
+            <a class="btn btn-outline btn-sm" id="tutor-whatsapp" style="display: none;" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <a class="btn btn-outline btn-sm" id="tutor-email" style="display: none;"></a>
+          </div>
+        </div>
+
+        <p class="alert alert-info" id="tutor-self-note" style="display: none;">Así ven tu perfil las demás personas. Puedes cambiarlo en <a href="perfil.html" class="profile-link">Mi perfil</a>.</p>
+
+        <form action="api/mensaje_enviar.php" method="POST" id="message-form" class="profile-block" style="display: none;">
+          <h2 class="profile-subtitle">Enviar un mensaje</h2>
+          <input type="hidden" name="csrf_token" value="">
+          <input type="hidden" name="destinatario_id" id="message-to" value="">
+          <input type="hidden" name="origen" value="tutor">
+          <div class="form-group">
+            <label for="mensaje" class="form-label">Tu mensaje</label>
+            <textarea name="mensaje" id="mensaje" class="form-control" rows="4" maxlength="1000" required placeholder="Preséntate y cuéntale qué necesitas aprender…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Enviar mensaje</button>
+        </form>
+      </article>
+
+    </div>
+  </main>
+
+  <div id="toast-box" class="toast-container" style="display: none;">
+    <div class="toast">
+      <span id="toast-icon" class="toast-icon">✓</span>
+      <span id="toast-message"></span>
+    </div>
+  </div>
+
+  <footer class="footer" style="padding: 24px 0; margin-top: auto;">
+    <div class="container" style="text-align: center; font-size: 13px; color: #64748B;">
+      &copy; 2026 TutoresOn-Line. Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/paginas.js" defer></script>
+</body>
+</html>
