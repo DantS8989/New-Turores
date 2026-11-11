@@ -2,9 +2,8 @@
 /**
  * config.example.php - Plantilla de configuración.
  *
- * 1. Copia este archivo como config.php (en la misma carpeta).
- * 2. Escribe los datos de la base de datos MySQL de tu hosting.
- * 3. NUNCA subas config.php a Git (ya está en .gitignore).
+ * Copia este archivo como config.php en esta misma carpeta y completa
+ * las credenciales de tu base de datos.
  */
 return [
     'host'   => 'localhost',

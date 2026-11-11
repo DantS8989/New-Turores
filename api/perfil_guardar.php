@@ -80,7 +80,7 @@ if ($isTutor) {
 }
 
 // 3. Foto de perfil (opcional)
-$oldPhoto = $row['foto'];
+$oldPhoto = $row['foto'] ?? null;
 $newPhoto = null;
 $removePhoto = post_str('quitar_foto') === '1';
 $upload = $_FILES['foto'] ?? null;
