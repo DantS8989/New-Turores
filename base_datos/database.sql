@@ -1,12 +1,4 @@
--- ============================================================
--- TutoresOn-Line · Base de datos MySQL
--- Sin usuarios ni datos de prueba: las cuentas las crea la gente
--- que se registra desde la página.
---
--- En un hosting compartido la base ya viene creada desde el panel
--- (cPanel / phpMyAdmin): selecciónala e importa este archivo.
--- En local (USBWebserver) puedes descomentar las dos líneas siguientes.
--- ============================================================
+
 -- CREATE DATABASE IF NOT EXISTS tutores_online CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- USE tutores_online;
 
