@@ -58,9 +58,9 @@ if (session_status() === PHP_SESSION_NONE) {
 /* ──────────────────────────────────────────────────────────
  * Conexión a la base de datos (credenciales en config.php)
  * ────────────────────────────────────────────────────────── */
-$configFile = dirname(__DIR__, 2) . '/config/config.php';
+$configFile = dirname(__DIR__, 2) . '/configuracion/config.php';
 if (!is_file($configFile)) {
-    error_log('[TutoresOn-Line] Falta config.php (copia config/config.example.php).');
+    error_log('[TutoresOn-Line] Falta config.php (copia configuracion/config.example.php).');
     fail_server();
 }
 $config = require $configFile;

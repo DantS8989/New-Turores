@@ -6,7 +6,7 @@
  * o responder a alguien que ya te escribió. Máximo 10 mensajes por hora.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('mensajes.html');

@@ -5,7 +5,7 @@
  * (esos se ven solo con sesión iniciada, en tutor_perfil.php).
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 $tutors = [];
 foreach (db_list_tutors(60) as $row) {

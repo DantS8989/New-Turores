@@ -6,7 +6,7 @@
  * También entrega el token CSRF que main.js coloca en los formularios.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 try_auto_login();
 

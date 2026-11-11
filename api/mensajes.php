@@ -3,7 +3,7 @@
  * mensajes.php - Mensajes recibidos y enviados por la persona con sesión (JSON).
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 $user = require_login_json();
 

@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     specialty VARCHAR(255) NOT NULL DEFAULT '',
     bio VARCHAR(500) NOT NULL DEFAULT '',            -- descripción del perfil
     tarifa_hora DECIMAL(10, 2) NULL,                 -- precio por hora (solo tutores)
-    foto VARCHAR(40) NULL,                           -- nombre del archivo en uploads/fotos/
+    foto VARCHAR(40) NULL,                           -- nombre del archivo en subidas/fotos/
     whatsapp VARCHAR(20) NULL,                       -- contacto del tutor (solo se ve con sesión)
     email_contacto VARCHAR(150) NULL,                -- contacto del tutor (solo se ve con sesión)
     remember_token_hash VARCHAR(255) NULL,           -- hash SHA-256 del token "Recordarme"

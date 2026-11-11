@@ -5,12 +5,12 @@
 Options -Indexes
 DirectoryIndex index.html
 
-# ── 1. El frontend vive en public/; la API y la lógica quedan fuera de él ──
+# ── 1. El frontend vive en publico/; la API y la lógica quedan fuera de él ──
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^$ public/index.html [L]
-    RewriteRule ^(index|login|mensajes|perfil|registro|tutor)\.html$ public/$1.html [L]
-    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+    RewriteRule ^$ publico/index.html [L]
+    RewriteRule ^(index|login|mensajes|perfil|registro|tutor)\.html$ publico/$1.html [L]
+    RewriteRule ^recursos/(.*)$ publico/recursos/$1 [L]
 </IfModule>
 
 # ── 2. Archivos internos que nunca deben descargarse desde el navegador ──
@@ -28,7 +28,8 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule (^|/)\.(?!well-known) - [R=404,L]
-    RewriteRule ^(app|config|database)/ - [R=404,L]
+    RewriteRule ^(aplicacion|configuracion|base_datos)/ - [R=404,L]
+    RewriteRule ^almacenamiento/(?!subidas/) - [R=404,L]
 
     # ── 3. HTTPS obligatorio ──
     # Descomenta estas 3 líneas cuando el hosting ya tenga certificado SSL:

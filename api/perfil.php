@@ -3,7 +3,7 @@
  * perfil.php - Datos del perfil de la persona con sesión iniciada (JSON).
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 $user = require_login_json();
 $row  = db_find_user_by_id($user['id']);

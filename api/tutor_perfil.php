@@ -6,7 +6,7 @@
  * Aquí se incluyen los datos de contacto, por eso nunca se entregan a visitantes.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 $user = require_login_json();
 

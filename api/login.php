@@ -6,7 +6,7 @@
  * (no revela si el correo existe) y comparación en tiempo similar.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 // Hash válido de relleno: se verifica cuando el correo no existe para que
 // la respuesta tarde lo mismo y no se pueda averiguar qué correos existen.

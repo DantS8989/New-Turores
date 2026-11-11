@@ -6,8 +6,8 @@
  * Tutores: además especialidad, tarifa por hora y datos de contacto.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
-require_once __DIR__ . '/../app/services/fotos.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
+require_once __DIR__ . '/../aplicacion/servicios/fotos.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('perfil.html');

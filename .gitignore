@@ -1,5 +1,6 @@
 # Credenciales reales: no se suben al repositorio
 config.php
+configuracion/config.php
 
 # Datos locales y archivos del sistema
 data/
@@ -8,5 +9,5 @@ data/
 Thumbs.db
 
 # Fotos de perfil subidas por los usuarios
-storage/uploads/fotos/*
-!storage/uploads/fotos/.gitkeep
+almacenamiento/subidas/fotos/*
+!almacenamiento/subidas/fotos/.gitkeep

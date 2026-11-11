@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Los nombres de foto vienen validados del servidor; aquí se vuelve a comprobar el formato
   const PHOTO_RE = /^[a-f0-9]{32}\.(jpg|png|webp)$/;
   function photoUrl(name) {
-    return typeof name === 'string' && PHOTO_RE.test(name) ? 'storage/uploads/fotos/' + name : null;
+    return typeof name === 'string' && PHOTO_RE.test(name) ? 'almacenamiento/subidas/fotos/' + name : null;
   }
 
   /** Pone la foto como fondo del círculo; si no hay foto, deja la inicial. */

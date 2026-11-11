@@ -10,7 +10,7 @@
 
 define('FOTO_MAX_BYTES', 2 * 1024 * 1024);
 define('FOTO_MAX_PIXELS', 4000);
-define('FOTO_DIR', dirname(__DIR__, 2) . '/storage/uploads/fotos/');
+define('FOTO_DIR', dirname(__DIR__, 2) . '/almacenamiento/subidas/fotos/');
 
 function foto_nombre_valido($name) {
     return is_string($name) && preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $name) === 1;

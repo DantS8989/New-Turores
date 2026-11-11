@@ -6,7 +6,7 @@
  * de la persona, por eso se exige POST + CSRF.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_valid()) {
     redirect('index.html');

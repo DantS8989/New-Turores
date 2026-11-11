@@ -7,7 +7,7 @@
  * no por la URL.
  */
 
-require_once __DIR__ . '/../app/bootstrap/db.php';
+require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('registro.html');
