@@ -12,10 +12,8 @@
 </head>
 <body>
 
-  <!-- Iluminación de fondo sutil -->
   <div class="ambient-glow"></div>
 
-  <!-- Barra de Navegación -->
   <header class="navbar">
     <div class="container nav-inner">
       <a href="index.html" class="brand-logo">
@@ -33,13 +31,11 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Opciones para visitante (sin iniciar sesión) -->
         <div id="nav-guest-actions" style="display: flex; align-items: center; gap: 8px;">
           <a href="login.html" class="btn btn-ghost btn-sm" id="nav-login-btn">Iniciar sesión</a>
           <a href="registro.html" class="btn btn-primary btn-sm" id="nav-register-btn">Registrarse</a>
         </div>
 
-        <!-- Opciones para usuario con sesión activa (controlado por JS) -->
         <div id="nav-user-actions" style="display: none; align-items: center; gap: 10px;">
           <a href="mensajes.html" class="btn btn-ghost btn-sm">Mensajes</a>
           <a href="perfil.html" class="user-menu-pill" title="Ver mi perfil">
@@ -65,7 +61,6 @@
     </div>
   </header>
 
-  <!-- Notificación Toast dinámica -->
   <div class="toast-container" id="toast-box" style="display: none;">
     <div class="toast">
       <span id="toast-icon" style="color: #10B981; font-size: 18px;">✓</span>
@@ -76,7 +71,6 @@
   <main class="container">
 
 
-    <!-- Hero Section (Accesible sin iniciar sesión) -->
     <section class="hero-section">
       <div class="hero-grid">
         <div class="hero-content">
@@ -91,7 +85,6 @@
             Clases particulares 1 a 1 virtuales o presenciales con profesionales calificados. Potencia tus conocimientos a tu propio ritmo.
           </p>
 
-          <!-- Buscador interactivo en vivo -->
           <div class="search-card">
             <div class="search-input-group">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -119,7 +112,6 @@
 
         </div>
 
-        <!-- Imagen principal -->
         <div class="hero-visual">
           <div class="hero-visual-card">
             <img 
@@ -133,7 +125,6 @@
       </div>
     </section>
 
-    <!-- Sección: Materias Populares (HTML Semántico) -->
     <section class="section" id="materias">
       <div class="section-header">
         <span class="section-tag">Categorías</span>
@@ -192,7 +183,6 @@
       </div>
     </section>
 
-    <!-- Sección: Tutores Destacados (HTML Semántico) -->
     <section class="section" id="tutores" style="background: rgba(255, 255, 255, 0.4); border-radius: var(--radius-lg); padding: 48px 32px;">
       <div class="section-header">
         <span class="section-tag">Comunidad</span>
@@ -204,7 +194,6 @@
       <p class="tutors-empty" id="tutors-empty" style="display: none;"></p>
     </section>
 
-    <!-- Sección: Cómo Funciona -->
     <section class="section" id="como-funciona">
       <div class="section-header">
         <span class="section-tag">Paso a Paso</span>
@@ -233,7 +222,6 @@
       </div>
     </section>
 
-    <!-- CTA Banner Final -->
     <section class="section" style="padding-top: 0;">
       <div class="cta-banner">
         <h2>Empieza a mejorar tus calificaciones hoy mismo</h2>
@@ -246,7 +234,6 @@
     </section>
   </main>
 
-  <!-- Footer HTML Semántico -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">

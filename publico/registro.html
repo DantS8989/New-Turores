@@ -12,10 +12,8 @@
 </head>
 <body>
 
-  <!-- Iluminación de fondo sutil -->
   <div class="ambient-glow"></div>
 
-  <!-- Barra de navegación superior -->
   <header class="navbar">
     <div class="container nav-inner">
       <a href="index.html" class="brand-logo">
@@ -41,7 +39,6 @@
           <p>Regístrate en pocos segundos y comienza hoy mismo.</p>
         </div>
 
-        <!-- Alerta de errores dinámica -->
         <div id="auth-alert" class="alert alert-danger" style="display: none;">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
             <circle cx="12" cy="12" r="10"></circle>
@@ -51,11 +48,9 @@
           <div id="auth-alert-message"></div>
         </div>
 
-        <!-- Formulario que envía al backend PHP (api/registro.php) -->
         <form action="api/registro.php" method="POST" id="register-form">
           <input type="hidden" name="csrf_token" value="">
           
-          <!-- Selector interactivo de Rol -->
           <label class="form-label" style="margin-bottom: 8px;">¿Cómo deseas usar TutoresOn-Line?</label>
           <div class="role-selector-grid">
             <label class="role-radio-card">
@@ -116,7 +111,6 @@
             />
           </div>
 
-          <!-- Campo dinámico para Tutores -->
           <div class="form-group" id="specialty-group" style="display: none;">
             <label for="specialty" class="form-label">Materia o Especialidad Principal</label>
             <input 

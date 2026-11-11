@@ -1,22 +1,8 @@
-/**
- * TutoresOn-Line — JavaScript de la interfaz
- *
- * - Pide a api/check_session.php el estado de la sesión y el token CSRF
- *   y lo coloca en los formularios.
- * - Pide a api/flash.php el mensaje de una sola vez (errores, bienvenida,
- *   cierre de sesión). Nada de esto viaja por la URL.
- * - Carga los tutores registrados desde api/tutores.php.
- *
- * Todo el texto que viene del servidor se inserta con textContent
- * (nunca con innerHTML), para evitar XSS.
- */
+// Utilidades y comportamiento común de las páginas públicas.
 
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  // ──────────────────────────────────────────────────────────
-  // Utilidades
-  // ──────────────────────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
 
   async function getJSON(url) {
@@ -75,9 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return '$ ' + Number(value).toLocaleString('es-CO', { maximumFractionDigits: 2 }) + ' / hora';
   }
 
-  // ──────────────────────────────────────────────────────────
-  // 1. Mostrar / ocultar contraseña
-  // ──────────────────────────────────────────────────────────
   const EYE_OPEN =
     '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' +
     '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
@@ -96,9 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ──────────────────────────────────────────────────────────
-  // 2. Selector de rol (registro.html)
-  // ──────────────────────────────────────────────────────────
   const roleInputs = document.querySelectorAll('input[name="role"]');
   const specialtyGroup = $('specialty-group');
 
@@ -111,9 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
   roleInputs.forEach((input) => input.addEventListener('change', updateRoleView));
   updateRoleView();
 
-  // ──────────────────────────────────────────────────────────
-  // 3. Alertas de error en login.html / registro.html
-  // ──────────────────────────────────────────────────────────
   function showAuthError(data) {
     const box = $('auth-alert');
     const msg = $('auth-alert-message');
@@ -141,9 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ──────────────────────────────────────────────────────────
-  // 4. Toast (index.html)
-  // ──────────────────────────────────────────────────────────
   function showToast(text, icon, color) {
     const box = $('toast-box');
     const msg = $('toast-message');
@@ -188,9 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ──────────────────────────────────────────────────────────
-  // 5. Estado de sesión (barra de navegación)
-  // ──────────────────────────────────────────────────────────
   const navGuest = $('nav-guest-actions');
   const navUser = $('nav-user-actions');
   let currentUser = null;
@@ -211,9 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ──────────────────────────────────────────────────────────
-  // 6. Tutores registrados y filtros (index.html)
-  // ──────────────────────────────────────────────────────────
   const grid = $('tutors-grid');
   const emptyMsg = $('tutors-empty');
   const searchInput = $('landing-search-input');
@@ -334,9 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ──────────────────────────────────────────────────────────
-  // 7. Carga inicial (sesión + mensaje flash + tutores)
-  // ──────────────────────────────────────────────────────────
   const sessionReq = getJSON('api/check_session.php')
     .then((data) => {
       if (data.csrf_token) setCsrfTokens(data.csrf_token);

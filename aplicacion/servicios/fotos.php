@@ -1,12 +1,5 @@
 <?php
-/**
- * fotos.php - Subida segura de fotos de perfil (se incluye desde perfil_guardar.php).
- *
- * - Valida que sea una imagen real (JPG, PNG o WebP) de máximo 2 MB.
- * - Con la extensión GD la vuelve a codificar como JPG cuadrado de 512 px:
- *   elimina metadatos (GPS, EXIF) y cualquier contenido oculto en el archivo.
- * - Guarda con nombre aleatorio; el nombre original nunca se usa.
- */
+// Valida y almacena las fotos de perfil con un nombre generado por el servidor.
 
 define('FOTO_MAX_BYTES', 2 * 1024 * 1024);
 define('FOTO_MAX_PIXELS', 4000);
@@ -50,7 +43,7 @@ function foto_guardar($file) {
     if (!isset($types[$info['mime']])) {
         return [null, 'photo_invalid'];
     }
-    // Evita imágenes gigantes que agotan la memoria al procesarlas
+    // Limita las dimensiones antes de procesar la imagen.
     if ($info[0] > FOTO_MAX_PIXELS || $info[1] > FOTO_MAX_PIXELS || $info[0] < 1 || $info[1] < 1) {
         return [null, 'photo_invalid'];
     }
@@ -82,7 +75,7 @@ function foto_guardar($file) {
         return $ok ? [$name, null] : [null, 'photo_error'];
     }
 
-    // Sin GD: se guarda el archivo ya validado, con la extensión según su tipo real
+    // Sin GD se conserva el formato validado.
     $name = $base . '.' . $types[$info['mime']];
     if (!move_uploaded_file($file['tmp_name'], FOTO_DIR . $name)) {
         return [null, 'photo_error'];

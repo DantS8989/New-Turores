@@ -36,7 +36,6 @@
   --font-body: 'Inter', sans-serif;
 }
 
-/* ── Reset & General ─────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -70,7 +69,6 @@ img {
   display: block;
 }
 
-/* ── Background Ambient Blobs ────────────────────────────────── */
 .ambient-glow {
   position: fixed;
   inset: 0;
@@ -101,14 +99,12 @@ img {
   background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
 }
 
-/* ── Container ───────────────────────────────────────────────── */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ── Typography & Gradients ──────────────────────────────────── */
 h1,
 h2,
 h3,
@@ -128,7 +124,6 @@ h6 {
   background-clip: text;
 }
 
-/* ── Navbar ──────────────────────────────────────────────────── */
 .navbar {
   position: sticky;
   top: 0;
@@ -203,7 +198,6 @@ h6 {
   gap: 12px;
 }
 
-/* User Pill in Navbar */
 .user-menu-pill {
   display: flex;
   align-items: center;
@@ -246,7 +240,6 @@ h6 {
   color: var(--primary);
 }
 
-/* ── Buttons ─────────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -338,7 +331,6 @@ h6 {
   width: 100%;
 }
 
-/* ── Badges ──────────────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -371,7 +363,6 @@ h6 {
   padding: 3px 8px;
 }
 
-/* ── Hero Section ────────────────────────────────────────────── */
 .hero-section {
   padding: 60px 0 40px;
   position: relative;
@@ -422,7 +413,6 @@ h6 {
   max-width: 520px;
 }
 
-/* Hero Search Bar */
 .search-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -484,7 +474,6 @@ h6 {
   color: var(--text-muted);
 }
 
-/* Hero Right Visuals */
 .hero-visual-card {
   position: relative;
   background: linear-gradient(145deg, #ffffff, #f1f5f9);
@@ -524,7 +513,6 @@ h6 {
   left: -20px;
 }
 
-/* ── Section General ─────────────────────────────────────────── */
 .section {
   padding: 70px 0;
 }
@@ -555,7 +543,6 @@ h6 {
   color: var(--text-muted);
 }
 
-/* ── Subjects Grid ───────────────────────────────────────────── */
 .subjects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -603,7 +590,6 @@ h6 {
   color: var(--text-muted);
 }
 
-/* ── Tutors Grid ─────────────────────────────────────────────── */
 .tutors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -739,7 +725,6 @@ h6 {
   color: var(--text-muted);
 }
 
-/* ── Features / How it works ─────────────────────────────────── */
 .steps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -781,7 +766,6 @@ h6 {
   line-height: 1.6;
 }
 
-/* ── Banner CTA ──────────────────────────────────────────────── */
 .cta-banner {
   background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
   border-radius: var(--radius-lg);
@@ -813,7 +797,6 @@ h6 {
   flex-wrap: wrap;
 }
 
-/* ── Auth Screens (Login & Registro) ─────────────────────────── */
 .auth-wrapper {
   flex: 1;
   display: flex;
@@ -855,7 +838,6 @@ h6 {
   color: var(--text-muted);
 }
 
-/* Form Controls */
 .form-group {
   margin-bottom: 18px;
 }
@@ -906,7 +888,6 @@ h6 {
   justify-content: center;
 }
 
-/* Role Selector Buttons */
 .role-selector-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -965,7 +946,6 @@ h6 {
 
 
 
-/* Alert Notification */
 .alert {
   padding: 12px 16px;
   border-radius: var(--radius-md);
@@ -995,7 +975,6 @@ h6 {
   border: 1px solid #BFDBFE;
 }
 
-/* Session Notice Banner (When logged in on landing) */
 .user-welcome-banner {
   background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
   border: 1px solid #DBEAFE;
@@ -1028,7 +1007,6 @@ h6 {
   font-size: 18px;
 }
 
-/* ── Footer ──────────────────────────────────────────────────── */
 .footer {
   background: #0F172A;
   color: #94A3B8;
@@ -1086,7 +1064,6 @@ h6 {
   font-size: 13px;
 }
 
-/* ── Toast Notifications ─────────────────────────────────────── */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -1120,7 +1097,6 @@ h6 {
   }
 }
 
-/* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -1174,10 +1150,8 @@ h6 {
   }
 }
 
-/* Formulario de cierre de sesión (POST con token CSRF) */
 .logout-form { margin: 0; display: inline-flex; }
 
-/* Estado vacío del listado de tutores */
 .tutors-empty {
   text-align: center;
   color: var(--text-muted);
@@ -1185,7 +1159,6 @@ h6 {
   padding: 24px 0 8px;
 }
 
-/* ── Perfiles, tutor y mensajes ───────────────────────────────── */
 .page-main { flex: 1; padding: 36px 0 56px; }
 .page-narrow { max-width: 760px; }
 

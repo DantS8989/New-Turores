@@ -1,10 +1,5 @@
 <?php
-/**
- * login.php - Procesa el formulario de login.html (POST).
- *
- * Protecciones: token CSRF, límite de intentos, mensaje de error único
- * (no revela si el correo existe) y comparación en tiempo similar.
- */
+// Procesa el inicio de sesión y aplica las protecciones de autenticación.
 
 require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
@@ -26,26 +21,23 @@ $password = post_str('password');
 $remember = post_str('remember') === '1';
 $ip       = client_ip();
 
-// Página a la que volver tras iniciar sesión (solo valores permitidos)
+// Solo se permiten páginas internas como destino de retorno.
 $next = post_str('next');
 if (!preg_match('/^(tutor\.html\?id=\d{1,10}|perfil\.html|mensajes\.html)$/', $next)) {
     $next = '';
 }
 
-// 1. Campos válidos
 if ($email === '' || $password === '' || strlen($email) > 150 || strlen($password) > 1024
     || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     flash_set('error', ['code' => 'invalid_credentials', 'email' => substr($email, 0, 150), 'next' => $next]);
     redirect('login.html');
 }
 
-// 2. Demasiados intentos fallidos
 if (login_is_locked($email, $ip)) {
     flash_set('error', ['code' => 'too_many_attempts', 'email' => $email, 'next' => $next]);
     redirect('login.html');
 }
 
-// 3. Verificar credenciales
 $user  = db_find_user_by_email($email);
 $hash  = $user ? $user['password'] : DUMMY_HASH;
 $valid = password_verify($password, $hash) && $user !== null;
@@ -56,12 +48,10 @@ if (!$valid) {
     redirect('login.html');
 }
 
-// 4. Actualizar el hash si el algoritmo por defecto de PHP cambió
 if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
     db_update_user_password($user['id'], $password);
 }
 
-// 5. Abrir sesión
 login_clear_failures($email);
 session_login($user);
 

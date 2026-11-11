@@ -12,10 +12,8 @@
 </head>
 <body>
 
-  <!-- Iluminación de fondo sutil -->
   <div class="ambient-glow"></div>
 
-  <!-- Barra de navegación superior -->
   <header class="navbar">
     <div class="container nav-inner">
       <a href="index.html" class="brand-logo">
@@ -41,7 +39,6 @@
           <p>Bienvenido de vuelta. Ingresa tus datos para continuar.</p>
         </div>
 
-        <!-- Contenedor dinámico de alertas de error -->
         <div id="auth-alert" class="alert alert-danger" style="display: none;">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
             <circle cx="12" cy="12" r="10"></circle>
@@ -51,7 +48,6 @@
           <div id="auth-alert-message"></div>
         </div>
 
-        <!-- Formulario que envía los datos al backend PHP (api/login.php) -->
         <form action="api/login.php" method="POST" id="login-form">
           <input type="hidden" name="csrf_token" value="">
           <input type="hidden" name="next" id="next" value="">

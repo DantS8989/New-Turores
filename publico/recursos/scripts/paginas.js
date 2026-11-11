@@ -1,11 +1,4 @@
-/**
- * TutoresOn-Line — Pantallas de perfil, perfil de tutor y mensajes
- *
- * Se carga después de main.js (que expone window.TutoresApp).
- * Estas pantallas exigen una cuenta iniciada: sin sesión envían a login.html
- * y, tras iniciar sesión, vuelven a la página que se quería abrir.
- * Todo el texto del servidor se inserta con textContent (sin innerHTML).
- */
+// Carga las pantallas que requieren sesión y sus datos desde la API.
 
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
@@ -17,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const $ = (id) => document.getElementById(id);
   const show = (el, on, display) => { if (el) el.style.display = on ? (display || 'block') : 'none'; };
 
-  /** Pide JSON al servidor y devuelve {status, data} sin lanzar por códigos 401/404. */
+  /** Devuelve la respuesta JSON junto con su código HTTP. */
   async function api(url) {
     const res = await fetch(url, { credentials: 'same-origin', cache: 'no-store' });
     let data = null;
-    try { data = await res.json(); } catch (e) { /* respuesta sin JSON */ }
+    try { data = await res.json(); } catch (e) {}
     return { status: res.status, data };
   }
 
@@ -54,9 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return isNaN(d) ? '' : d.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' });
   }
 
-  // ─────────────────────────────────────────────────────────
-  // Mi perfil (perfil.html)
-  // ─────────────────────────────────────────────────────────
+  // Mi perfil.
   async function initProfile() {
     if (!(await requireSession('perfil.html'))) return;
     const { status, data } = await api('api/perfil.php');
@@ -82,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
       show(link, true, 'inline-block');
     }
 
-    // Aviso antes de subir una foto demasiado pesada
+    // Evita enviar archivos que el servidor rechazará por tamaño.
     $('foto').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file && file.size > 2 * 1024 * 1024) {
@@ -92,9 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ─────────────────────────────────────────────────────────
-  // Perfil de un tutor (tutor.html?id=N) — solo con sesión
-  // ─────────────────────────────────────────────────────────
+  // Perfil público de un tutor.
   async function initTutor() {
     const id = new URLSearchParams(window.location.search).get('id') || '';
     const loading = $('tutor-loading');
@@ -129,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
       show($('tutor-bio-block'), true);
     }
 
-    // Contacto directo (el servidor solo lo entrega a cuentas iniciadas)
+    // Los datos de contacto solo llegan a usuarios autenticados.
     const wa = $('tutor-whatsapp');
     const mail = $('tutor-email');
     const digits = (t.whatsapp || '').replace(/\D/g, '');
@@ -154,9 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     show($('tutor-card'), true);
   }
 
-  // ─────────────────────────────────────────────────────────
-  // Mensajes (mensajes.html)
-  // ─────────────────────────────────────────────────────────
+  // Mensajes recibidos y enviados.
   function buildMessage(msg, kind, csrfToken) {
     const item = document.createElement('article');
     item.className = 'msg-item';

@@ -1,10 +1,5 @@
 <?php
-/**
- * mensaje_enviar.php - Envía un mensaje dentro de la plataforma (POST).
- *
- * Reglas: hay que tener una cuenta iniciada; se puede escribir a un tutor,
- * o responder a alguien que ya te escribió. Máximo 10 mensajes por hora.
- */
+// Envía mensajes entre usuarios autenticados.
 
 require_once __DIR__ . '/../aplicacion/arranque/db.php';
 
@@ -20,7 +15,7 @@ if (!$user) {
     redirect($toId > 0 ? 'login.html?next=' . rawurlencode('tutor.html?id=' . $toId) : 'login.html');
 }
 
-// Solo dos destinos de vuelta permitidos (nada de redirecciones libres)
+// El origen del formulario determina un destino interno permitido.
 $backUrl = $fromMessages ? 'mensajes.html' : 'tutor.html?id=' . $toId;
 
 function mensaje_error($code, $backUrl) {

@@ -1,10 +1,5 @@
 <?php
-/**
- * config.example.php - Plantilla de configuración.
- *
- * Copia este archivo como config.php en esta misma carpeta y completa
- * las credenciales de tu base de datos.
- */
+// Copia este archivo como config.php y completa las credenciales.
 return [
     'host'   => 'localhost',
     'dbname' => 'nombre_de_tu_base_de_datos',

@@ -33,7 +33,6 @@ if (!$row) {
 }
 $isTutor = ($row['role'] === 'tutor');
 
-// 1. Datos básicos
 $name = trim(post_str('name'));
 $bio  = trim(post_str('bio'));
 
@@ -45,7 +44,7 @@ if (mb_strlen($bio) > 500) {
 }
 $fields = ['nombre' => $name, 'bio' => $bio];
 
-// 2. Datos solo para tutores
+
 if ($isTutor) {
     $specialty = trim(post_str('specialty'));
     if (mb_strlen($specialty) > 255) {
@@ -79,7 +78,7 @@ if ($isTutor) {
     $fields['email_contacto'] = $contactEmail;
 }
 
-// 3. Foto de perfil (opcional)
+
 $oldPhoto = $row['foto'] ?? null;
 $newPhoto = null;
 $removePhoto = post_str('quitar_foto') === '1';
@@ -95,13 +94,13 @@ if ($upload && ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) 
     $fields['foto'] = null;
 }
 
-// 4. Guardar y limpiar la foto anterior
+
 db_update_profile($row['id'], $fields);
 if (array_key_exists('foto', $fields) && $oldPhoto && $oldPhoto !== $newPhoto) {
     foto_borrar($oldPhoto);
 }
 
-// 5. Refrescar los datos de la sesión
+
 $_SESSION['user']['name'] = $name;
 if ($isTutor) {
     $_SESSION['user']['specialty'] = $fields['specialty'];

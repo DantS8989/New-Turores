@@ -1,15 +1,7 @@
 <?php
-/**
- * db.php - Conexión MySQL (PDO), sesiones seguras, CSRF, mensajes flash,
- *          límite de intentos de login y cookie "Recordarme".
- *
- * Este archivo solo se incluye desde otros .php (el .htaccess bloquea su
- * acceso directo). Requiere PHP 7.4 o superior.
- */
+// Conexión, sesión, autenticación y acceso a datos compartidos por la API.
 
-/* ──────────────────────────────────────────────────────────
- * Errores: se registran en el log del servidor, nunca se muestran
- * ────────────────────────────────────────────────────────── */
+/* Los errores se registran en el servidor y no se muestran al usuario. */
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 header_remove('X-Powered-By');
@@ -27,9 +19,6 @@ set_exception_handler(function ($e) {
     fail_server();
 });
 
-/* ──────────────────────────────────────────────────────────
- * Sesión segura
- * ────────────────────────────────────────────────────────── */
 define('REMEMBER_COOKIE', 'remember_token');
 define('REMEMBER_DAYS', 30);
 define('LOGIN_MAX_FAILS_EMAIL', 5);    // intentos fallidos por correo
@@ -55,9 +44,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* ──────────────────────────────────────────────────────────
- * Conexión a la base de datos (credenciales en config.php)
- * ────────────────────────────────────────────────────────── */
 $configFile = dirname(__DIR__, 2) . '/configuracion/config.php';
 if (!is_file($configFile)) {
     error_log('[TutoresOn-Line] Falta config.php (copia configuracion/config.example.php).');
@@ -82,9 +68,6 @@ try {
 }
 unset($config);
 
-/* ──────────────────────────────────────────────────────────
- * Utilidades
- * ────────────────────────────────────────────────────────── */
 function redirect($url) {
     if ($url !== '' && $url[0] !== '/' && !preg_match('/^[a-z][a-z0-9+.-]*:/i', $url)) {
         $url = '../' . $url;
@@ -100,13 +83,13 @@ function json_response($data) {
     exit;
 }
 
-/** Lee un campo POST como texto; si no es texto (p. ej. un arreglo) devuelve ''. */
+/** Lee un campo POST como texto. */
 function post_str($key) {
     $v = $_POST[$key] ?? '';
     return is_string($v) ? $v : '';
 }
 
-// Respaldo por si el hosting no tiene la extensión mbstring
+// Permite contar caracteres aunque mbstring no esté instalada.
 if (!function_exists('mb_strlen')) {
     function mb_strlen($text) {
         return (int)preg_match_all('/./us', $text);
@@ -121,7 +104,6 @@ function client_ip() {
     return substr($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', 0, 45);
 }
 
-/* ── CSRF ── */
 function csrf_token() {
     if (empty($_SESSION['csrf'])) {
         $_SESSION['csrf'] = bin2hex(random_bytes(32));
@@ -134,7 +116,6 @@ function csrf_valid() {
     return $sent !== '' && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $sent);
 }
 
-/* ── Mensajes flash (se guardan en la sesión, no en la URL) ── */
 function flash_set($type, array $data = []) {
     $_SESSION['flash'] = ['type' => $type, 'data' => $data];
 }
@@ -145,9 +126,6 @@ function flash_pull() {
     return $flash;
 }
 
-/* ──────────────────────────────────────────────────────────
- * Acceso a datos
- * ────────────────────────────────────────────────────────── */
 function map_user_fields($user) {
     if (!$user) return null;
     $user['name'] = $user['nombre'] ?? '';
@@ -215,9 +193,6 @@ function db_list_tutors($limit = 60) {
     return $stmt->fetchAll();
 }
 
-/* ──────────────────────────────────────────────────────────
- * Límite de intentos de inicio de sesión (anti fuerza bruta)
- * ────────────────────────────────────────────────────────── */
 function login_is_locked($email, $ip) {
     global $pdo;
     $since = date('Y-m-d H:i:s', time() - LOGIN_WINDOW_SECONDS);
@@ -236,7 +211,6 @@ function login_record_failure($email, $ip) {
     $stmt = $pdo->prepare('INSERT INTO intentos_login (email, ip, intentado_en) VALUES (?, ?, ?)');
     $stmt->execute([substr($email, 0, 150), $ip, date('Y-m-d H:i:s')]);
 
-    // Limpieza ocasional de registros antiguos
     if (random_int(1, 50) === 1) {
         $old = $pdo->prepare('DELETE FROM intentos_login WHERE intentado_en < ?');
         $old->execute([date('Y-m-d H:i:s', time() - 86400)]);
@@ -249,9 +223,6 @@ function login_clear_failures($email) {
     $stmt->execute([$email]);
 }
 
-/* ──────────────────────────────────────────────────────────
- * Sesión de usuario y cookie "Recordarme"
- * ────────────────────────────────────────────────────────── */
 function session_login($user) {
     session_regenerate_id(true);
     unset($_SESSION['csrf']); // token nuevo después de autenticar
@@ -337,9 +308,6 @@ function try_auto_login() {
 }
 
 
-/* ──────────────────────────────────────────────────────────
- * Usuario actual (con sesión o cookie "Recordarme")
- * ────────────────────────────────────────────────────────── */
 function current_user() {
     try_auto_login();
     return $_SESSION['user'] ?? null;
@@ -355,9 +323,6 @@ function require_login_json() {
     return $user;
 }
 
-/* ──────────────────────────────────────────────────────────
- * Perfiles
- * ────────────────────────────────────────────────────────── */
 function db_update_profile($id, array $fields) {
     global $pdo;
     $allowed = ['nombre', 'specialty', 'bio', 'tarifa_hora', 'foto', 'whatsapp', 'email_contacto'];
@@ -386,9 +351,6 @@ function tarifa_value($value) {
     return ($value === null || $value === '') ? null : (float)$value;
 }
 
-/* ──────────────────────────────────────────────────────────
- * Mensajes entre usuarios
- * ────────────────────────────────────────────────────────── */
 define('MESSAGE_MAX_PER_HOUR', 10);
 define('MESSAGE_MAX_LENGTH', 1000);
 
